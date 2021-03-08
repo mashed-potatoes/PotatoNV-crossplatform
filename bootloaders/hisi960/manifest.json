@@ -1,0 +1,21 @@
+{
+    "name": "hisi960",
+    "images": [
+        {
+            "filename": "xloader.img",
+            "role": "xloader",
+            "address": "0x00020000"
+        },
+        {
+            "filename": "uce.img",
+            "role": "uce",
+            "address": "0x6A908000"
+        },
+        {
+            "filename": "fastboot.img",
+            "role": "fastboot",
+            "address": "0x1AC00000"
+        }
+    ],
+    "props": {}
+}

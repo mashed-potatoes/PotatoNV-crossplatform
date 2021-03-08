@@ -1,0 +1,16 @@
+{
+    "name": "Kirin 659 (A)",
+    "images": [
+        {
+            "filename": "xloader.img",
+            "role": "xloader",
+            "address": "0x00020000"
+        },
+        {
+            "filename": "fastboot.img",
+            "role": "fastboot",
+            "address": "0x10000000"
+        }
+    ],
+    "props": {}
+}
