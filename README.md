@@ -1,13 +1,13 @@
-# Instructrions
+# Install
+- pip3 install -r requirements.txt
+
+# Instructions
 After the device is in test mode ( see https://github.com/mashed-potatoes/PotatoNV/issues/20 ):
 Using dmesg -w, you can verify that the device is in test mode 
 ![image info](./images/testmode.png)
 
+# Commands in test mode
 
-
-# Commands
-
-- pip3 install -r requirements.txt
 - cd usrlock && python3 main.py
 
 # Requirements 
