@@ -85,6 +85,7 @@ def main():
     if not args.skip_bootloader:
         with open(args.manifest) as json_file:
             data = json.load(json_file)
+            data["name"] = args.bootloader
         flash_images(data)
     write_nvme(args.key)
 
