@@ -4,6 +4,7 @@ Using dmesg -w, you can verify that the device is in test mode
 ![image info](./images/testmode.png)
 
 
+
 # Commands
 
 - pip3 install -r requirements.txt
@@ -12,6 +13,7 @@ Using dmesg -w, you can verify that the device is in test mode
 # Requirements 
 This program works with python-3.9
 
+Tested in Manjaro linux v5.10.23-1-MANJARO
 
 # License
 
