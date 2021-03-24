@@ -6,14 +6,15 @@ import hashlib
 from os import path
 from glob import glob
 from PyInquirer import prompt
-from . import ui
+from ui import *
 
 try:
-    from . import imageflasher, fastboot
+    from  imageflasher import *
+    from fastboot import *
 except Exception as e:
-    ui.error("Failed to import some dependencies.")
-    ui.error(str(e))
-    ui.tip("Install dependencies with pip:", chalk.blue("python3.%d -m pip install -r requirements.txt" % sys.version_info[1]))
+    error("Failed to import some dependencies.")
+    error(str(e))
+    tip("Install dependencies with pip:", chalk.blue("python3.%d -m pip install -r requirements.txt" % sys.version_info[1]))
     exit(1)
 
 
@@ -45,37 +46,37 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             'validate': lambda val: len(val) == 16 or 'Excepted 16 symbols'
         })['key']
     
-    args.manifest = "./bootloaders/%s/manifest.json".format(args.bootloader)
+    args.manifest = "./bootloaders/"+args.bootloader+"/manifest.json"
 
     if len(args.key) != 16:
-        ui.error("Invalid key length!", critical=True)
-
+        error("Invalid key length!", critical=True)
+    print(args.manifest)
     if not path.isfile(args.manifest):
-        ui.error("Bootloader is invalid or not found!", critical=True)
+        error("Bootloader is invalid or not found! %s".format(args.manifest), critical=True)
 
     return args
 
 
 def flash_images(data: dict):
-    flasher = imageflasher.ImageFlasher()
+    flasher = ImageFlasher()
     flasher.connect_serial()
     for image in data["images"]:
-        ui.progress(title="Flashing {}".format(image['role']))
+        progress(title="Flashing {}".format(image['role']))
         flasher.download_from_disk("./bootloaders/{}/{}"
                                    .format(data['name'], image['filename']), int(image['address'], 16))
-    ui.success("Bootloader uploaded.")
+    success("Bootloader uploaded.")
 
 
 def write_nvme(key: str):
-    ui.info("Waiting for device...")
+    info("Waiting for device...")
     m = hashlib.sha256()
     m.update(key.encode())
-    fb = fastboot.Fastboot()
-    ui.info("Connecting to fastboot device...")
+    fb = Fastboot()
+    info("Connecting to fastboot device...")
     fb.connect()
     fb.write_nvme(b"USRKEY", m.digest())
-    ui.success("Bootloader code updated")
-    ui.info("Rebooting device...")
+    success("Bootloader code updated")
+    info("Rebooting device...")
     fb.reboot()
 
 
@@ -87,3 +88,7 @@ def main():
             data["name"] = args.bootloader
         flash_images(data)
     write_nvme(args.key)
+
+
+if __name__ == '__main__':
+    main()

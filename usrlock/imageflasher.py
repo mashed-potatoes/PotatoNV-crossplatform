@@ -16,7 +16,7 @@ import serial.tools.list_ports
 import sys
 import os
 import time
-from . import ui
+from ui import *
 
 def calc_crc(data, crc=0):
     for char in data:
@@ -50,13 +50,13 @@ class ImageFlasher:
             self.serial.write(data)
             ack = self.serial.read(1)
             if ack and ack != self.ack:
-                ui.error(f"Invalid ACK from device! Read: {hex(ack)}, excepted: {hex(self.ack[0])}", critical=True)
+                error(f"Invalid ACK from device! Read: {hex(ack)}, excepted: {hex(self.ack[0])}", critical=True)
         except Exception as e:
-            ui.error(str(e), critical=True)
+            error(str(e), critical=True)
 
     def send_head_frame(self, length, address):
         self.serial.timeout = 0.09
-        ui.debug("Sending header frame")
+        debug("Sending header frame")
         data = self.headframe
         data += length.to_bytes(4, byteorder="big", signed=False)
         data += address.to_bytes(4, byteorder="big", signed=False)
@@ -64,7 +64,7 @@ class ImageFlasher:
 
     def send_data_frame(self, n, data):
         self.serial.timeout = 0.45
-        ui.debug("Sending data frame")
+        debug("Sending data frame")
         head = bytearray(self.dataframe)
         head.append(n & 0xFF)
         head.append((~ n) & 0xFF)
@@ -73,7 +73,7 @@ class ImageFlasher:
     def send_tail_frame(self, n):
         if self.serial:
             self.serial.timeout = 0.01
-        ui.debug("Sending tail frame")
+        debug("Sending tail frame")
         data = bytearray(self.tailframe)
         data.append(n & 0xFF)
         data.append((~ n) & 0xFF)
@@ -93,7 +93,7 @@ class ImageFlasher:
             self.send_data_frame(n + 1, f)
             n += 1
             length -= MAX_DATA_LEN
-            ui.progress(value=n, max_value=n_frames)
+            progress(value=n, max_value=n_frames)
         if length:
             if isinstance(data, bytes):
                 f = data[n * MAX_DATA_LEN:]
@@ -101,7 +101,7 @@ class ImageFlasher:
                 f = data.read()
             self.send_data_frame(n + 1, f)
             n += 1
-        ui.progress(value=100)
+        progress(value=100)
         self.send_tail_frame(n + 1)
         time.sleep(0.5)
 
@@ -117,13 +117,13 @@ class ImageFlasher:
             ports = serial.tools.list_ports.comports(include_links=False)
             for port in ports:
                 if port.vid == IDT_VID and port.pid == IDT_PID:
-                    ui.info(f"Autoselecting {port.hwid} aka {port.description} at {port.device}")
+                    info(f"Autoselecting {port.hwid} aka {port.description} at {port.device}")
                     if device:
-                        ui.error("Multiple devices detected in IDT mode", critical=True)
+                        error("Multiple devices detected in IDT mode", critical=True)
                     else:
                         device = port.device
         if not device:
-            ui.error("Need a device in IDT mode plugged in to this computer", critical=True)
+            error("Need a device in IDT mode plugged in to this computer", critical=True)
         self.serial = serial.Serial(dsrdtr=True, rtscts=True, port=device.replace("COM", r"\\.\COM"), baudrate=IDT_BAUDRATE, timeout=1)
 
     def close(self):

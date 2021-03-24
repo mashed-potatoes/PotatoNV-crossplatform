@@ -14,8 +14,14 @@ def success(*data):
 def tip(*data):
     print(chalk.magenta("tip"), " ".join(data))
 
+def tip(*data):
+    print(chalk.magenta("tip"), " ".join(data))
+
 
 def info(*data):
+    print(chalk.blue("info"), " ".join(data))
+
+def debug(*data):
     print(chalk.blue("info"), " ".join(data))
 
 
