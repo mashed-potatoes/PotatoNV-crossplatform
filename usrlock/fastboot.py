@@ -1,11 +1,11 @@
 import time
 import traceback
 from adb.fastboot import FastbootCommands
-from . import ui
+from ui import *
 
 
 def handle_exception(e: Exception, message: str):
-    ui.error(message)
+    error(message)
     traceback.print_exc()
     exit(1)
 
