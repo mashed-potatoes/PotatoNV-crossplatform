@@ -16,6 +16,7 @@ This program works with python-3.9
 Tested in Manjaro linux v5.10.23-1-MANJARO
 
 # License
+All bootloaders are Huawei Technologies Co., Ltd. property.
 
 Usrlock - CLI utility for unlocking Huawei devices on Kirin SoCs.
 Copyright (C) 2019  Penn Mackintosh (penn5)
