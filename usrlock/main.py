@@ -45,7 +45,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             'validate': lambda val: len(val) == 16 or 'Excepted 16 symbols'
         })['key']
     
-    args.manifest = "./bootloaders/%s/manifest.json".format(args.bootloader)
+    args.manifest = "./bootloaders/{}/manifest.json".format(args.bootloader)
 
     if len(args.key) != 16:
         ui.error("Invalid key length!", critical=True)

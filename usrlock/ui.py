@@ -28,6 +28,8 @@ def progress(title=None, value=0, max_value=100):
     if perc == 100:
         done()
 
+def debug(msg):
+    print('DEBUG: %s' % msg)
 
 def done():
     print(chalk.green('done'))
