@@ -1,5 +1,4 @@
 adb==1.3.0
-lxml==4.4.1
 pychalk==2.0.1
 pyserial==3.4
 inquirerpy==0.3.4

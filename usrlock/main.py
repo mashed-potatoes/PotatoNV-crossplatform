@@ -1,8 +1,8 @@
 import sys
 import chalk
 import argparse
-import json
 import hashlib
+import xml.etree.ElementTree as ET
 from os import path
 from glob import glob
 from . import ui
@@ -34,7 +34,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             'type': 'list',
             'name': 'bootloader',
             'message': 'Select bootloader:',
-            'choices': list(map(lambda x: path.split(x)[-1], glob('bootloaders/*')))
+            'choices': list(map(lambda x: path.basename(path.split(x)[-2]), glob('bootloaders/*/manifest.xml')))
         })['bootloader']
 
     if not args.key:
@@ -45,7 +45,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             'validate': lambda val: len(val) == 16 or 'Excepted 16 symbols'
         })['key']
     
-    args.manifest = "./bootloaders/%s/manifest.json".format(args.bootloader)
+    args.manifest = f"./bootloaders/{args.bootloader}/manifest.xml"
 
     if len(args.key) != 16:
         ui.error("Invalid key length!", critical=True)
@@ -62,7 +62,7 @@ def flash_images(data: dict):
     for image in data["images"]:
         ui.progress(title="Flashing {}".format(image['role']))
         flasher.download_from_disk("./bootloaders/{}/{}"
-                                   .format(data['name'], image['filename']), int(image['address'], 16))
+                                   .format(data['name'], image['path']), int(image['address'], 16))
     ui.success("Bootloader uploaded.")
 
 
@@ -82,8 +82,12 @@ def write_nvme(key: str):
 def main():
     args = setup()
     if not args.skip_bootloader:
-        with open(args.manifest) as json_file:
-            data = json.load(json_file)
-            data["name"] = args.bootloader
+        xmltree = ET.parse(args.manifest)
+        bootloader = xmltree.getroot()
+
+        data = bootloader.attrib
+        data["images"] = list(map(lambda img: img.attrib, bootloader.findall('image')))
+        data["name"] = args.bootloader
+
         flash_images(data)
     write_nvme(args.key)
