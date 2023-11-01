@@ -5,8 +5,8 @@ import json
 import hashlib
 from os import path
 from glob import glob
-from PyInquirer import prompt
 from . import ui
+from InquirerPy import prompt
 
 try:
     from . import imageflasher, fastboot
