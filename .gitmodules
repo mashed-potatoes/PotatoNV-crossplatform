@@ -1,0 +1,3 @@
+[submodule "bootloaders"]
+	path = bootloaders
+	url = https://github.com/mashed-potatoes/HiSiBootloaders.git
