@@ -23,9 +23,7 @@ class Fastboot:
 
     def write_nvme(self, prop: str, data: bytes):
         cmd = f"getvar:nve:{prop}@".encode('UTF-8')
-        print(cmd.decode("utf-8"))
         cmd += data
-        ui.info(f"Command: {cmd}")
         result = self.fb_dev.send(cmd)
         ui.info(f"Getvar result: {result}")
 
