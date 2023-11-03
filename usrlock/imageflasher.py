@@ -17,6 +17,7 @@ import sys
 import os
 import time
 from . import ui
+from time import sleep
 
 def calc_crc(data, crc=0):
     for char in data:
@@ -113,7 +114,8 @@ class ImageFlasher:
         self.send_data(f, os.stat(fil).st_size, address)
 
     def connect_serial(self, device=None):
-        if not device:
+        ui.info("Waiting for device in IDT mode")
+        while not device:
             ports = serial.tools.list_ports.comports(include_links=False)
             for port in ports:
                 if port.vid == IDT_VID and port.pid == IDT_PID:
@@ -122,6 +124,10 @@ class ImageFlasher:
                         ui.error("Multiple devices detected in IDT mode", critical=True)
                     else:
                         device = port.device
+            
+            if not device:
+                sleep(1)
+
         if not device:
             ui.error("Need a device in IDT mode plugged in to this computer", critical=True)
         self.serial = serial.Serial(dsrdtr=True, rtscts=True, port=device.replace("COM", r"\\.\COM"), baudrate=IDT_BAUDRATE, timeout=1)
