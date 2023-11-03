@@ -72,6 +72,7 @@ def write_nvme(key: str):
     fb = fastboot.Fastboot()
     fb.connect()
     fb.write_nvme("USRKEY", m.digest())
+    fb.write_nvme("WVLOCK", key.encode())
     ui.success("Bootloader code updated")
     ui.info("Rebooting device...")
     fb.reboot()
