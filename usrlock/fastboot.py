@@ -1,8 +1,7 @@
-import time
+from time import sleep
 import traceback
-from adb.fastboot import FastbootCommands
 from . import ui
-
+from fastbootpy import FastbootDevice, FastbootManager
 
 def handle_exception(e: Exception, message: str):
     ui.error(message)
@@ -12,37 +11,29 @@ def handle_exception(e: Exception, message: str):
 
 class Fastboot:
     def connect(self):
-        self.fb_dev = FastbootCommands()
+        ui.info("Waiting for fastboot device")
         while True:
-            devs = self.fb_dev.Devices()
-            if len(list(devs)):
-                time.sleep(1)
+            devices = FastbootManager.devices()
+            if len(devices) == 1:
+                self.fb_dev = FastbootDevice.connect(devices[0])
+                ui.info(f"Connected to device {devices[0]}")
                 break
-        self.fb_dev.ConnectDevice()
+            elif len(devices) > 1:
+                ui.error("More than one fastboot device is connected!")
 
     def write_nvme(self, prop: str, data: bytes):
-        try:
-            self.fb_dev._protocol.SendCommand(b'getvar', b'nve:' + prop + b'@' + data)
-        except Exception as e:
-            handle_exception(e, 'Failed to write NVME prop')
+        cmd = f"getvar:nve:{prop}@".encode('UTF-8')
+        print(cmd.decode("utf-8"))
+        cmd += data
+        ui.info(f"Command: {cmd}")
+        result = self.fb_dev.send(cmd)
+        ui.info(f"Getvar result: {result}")
 
     def reboot(self):
-        try:
-            self.fb_dev.Reboot()
-            self.fb_dev.Close()
-        except Exception as e:
-            handle_exception(e, 'Failed to reboot device')
-
+        result = self.fb_dev.reboot()
+        ui.info(f"Reboot result: {result}")
+    
     def reboot_bootloader(self):
-        try:
-            self.fb_dev.RebootBootloader()
-            self.fb_dev.Close()
-        except Exception as e:
-            handle_exception(e, 'Failed to reboot device')
-
-    def unlock(self, code: str):
-        try:
-            response = self.fb_dev.Oem('unlock %s' % code)
-            print(response)
-        except Exception as e:
-            handle_exception(e, "Failed to unlock bootloader")
+        result = self.fb_dev.reboot_bootloader()
+        ui.info(f"Reboot bootloader result: {result}")
+    

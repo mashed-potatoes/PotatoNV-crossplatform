@@ -67,13 +67,11 @@ def flash_images(data: dict):
 
 
 def write_nvme(key: str):
-    ui.info("Waiting for device...")
     m = hashlib.sha256()
     m.update(key.encode())
     fb = fastboot.Fastboot()
-    ui.info("Connecting to fastboot device...")
     fb.connect()
-    fb.write_nvme(b"USRKEY", m.digest())
+    fb.write_nvme("USRKEY", m.digest())
     ui.success("Bootloader code updated")
     ui.info("Rebooting device...")
     fb.reboot()
