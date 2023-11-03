@@ -1,5 +1,9 @@
 import chalk
+from os import environ
 
+def debug(*data):
+    if "POTATONV_DEBUG" in environ and bool(environ["POTATONV_DEBUG"]):
+        print(chalk.yellow("debug"), " ".join(data))
 
 def error(*data, critical=False):
     print(chalk.red("error"), " ".join(data))
