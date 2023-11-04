@@ -24,8 +24,11 @@ class Fastboot:
     def write_nvme(self, prop: str, data: bytes):
         cmd = f"getvar:nve:{prop}@".encode('UTF-8')
         cmd += data
+        ui.debug(f"Sending command: {cmd}")
+        ui.info(f"Writing {prop}")
         result = self.fb_dev.send(cmd)
-        ui.info(f"Getvar result: {result}")
+        if not "set nv ok" in result:
+            ui.error(f"Failed to write {prop}: {result}", critical=True)
 
     def reboot(self):
         result = self.fb_dev.reboot()
